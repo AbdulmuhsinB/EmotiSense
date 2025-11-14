@@ -5,7 +5,7 @@
 |--|--|--|--|
 | Erkam Yildirim | 160235206 | emyildirim | eyildirim1@myseneca.ca |
 | Abdulmuhsin Baksh | | | |
-| Ahmed Hafiz Shaikh | | | |
+| Ahmed Hafiz Shaikh | 127566222 | ahshaikh4 | ahshaikh4@myseneca.ca |
 
 
 ## Project Description
