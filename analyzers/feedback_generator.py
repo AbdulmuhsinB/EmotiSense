@@ -4,11 +4,9 @@ Combines facial and voice analysis to generate actionable feedback
 """
 
 
-class FeedbackGenerator:
-    """Generates natural language feedback from analysis results"""
-    
+class FeedbackGenerator:    
     def __init__(self):
-        """Initialize feedback generator"""
+        # initialize emotion feedback templates
         self.emotion_insights = {
             'happy': {
                 'positive': 'Great! You appeared happy and positive.',
@@ -41,15 +39,9 @@ class FeedbackGenerator:
         }
     
     def generate_feedback(self, facial_results, voice_results):
-        """
-        Generate comprehensive feedback from analysis results
-        
-        Args:
-            facial_results: Results from facial analysis
-            voice_results: Results from voice analysis
-            
-        Returns:
-            Dictionary containing structured feedback
+        """Generate comprehensive feedback from analysis results
+        Arguments: facial_results: results from facial analysis, voice_results: results from voice analysis
+        Return: dictionary containing structured feedback
         """
         feedback = {
             'summary': '',
@@ -60,7 +52,7 @@ class FeedbackGenerator:
             'areas_for_improvement': []
         }
         
-        # Handle errors
+        # check for errors
         has_facial_error = 'error' in facial_results
         has_voice_error = 'error' in voice_results
         
@@ -68,27 +60,27 @@ class FeedbackGenerator:
             feedback['summary'] = 'Unable to analyze video. Please ensure the video contains visible faces and clear audio.'
             return feedback
         
-        # Generate facial feedback
+        # generate facial feedback
         if not has_facial_error:
             facial_feedback = self._generate_facial_feedback(facial_results)
             feedback['facial_feedback'] = facial_feedback['feedback']
             feedback['strengths'].extend(facial_feedback['strengths'])
             feedback['areas_for_improvement'].extend(facial_feedback['improvements'])
         
-        # Generate voice feedback
+        # generate voice feedback
         if not has_voice_error:
             voice_feedback = self._generate_voice_feedback(voice_results)
             feedback['voice_feedback'] = voice_feedback['feedback']
             feedback['strengths'].extend(voice_feedback['strengths'])
             feedback['areas_for_improvement'].extend(voice_feedback['improvements'])
         
-        # Generate overall summary
+        # generate overall summary
         feedback['summary'] = self._generate_summary(
             facial_results, voice_results, feedback['strengths'],
             feedback['areas_for_improvement']
         )
         
-        # Generate actionable recommendations
+        # generate actionable recommendations
         feedback['recommendations'] = self._generate_recommendations(
             facial_results, voice_results
         )
@@ -104,7 +96,7 @@ class FeedbackGenerator:
         dominant_emotion = facial_results.get('dominant_emotion', 'neutral')
         emotion_percentages = facial_results.get('emotion_percentages', {})
         
-        # Main emotion feedback
+        # main emotion feedback
         if dominant_emotion in self.emotion_insights:
             insight = self.emotion_insights[dominant_emotion]
             feedback_items.append({
@@ -120,7 +112,7 @@ class FeedbackGenerator:
             else:
                 improvements.append(f"Work on managing {dominant_emotion} expressions")
         
-        # Emotional consistency
+        # emotional consistency
         emotion_count = len(emotion_percentages)
         if emotion_count > 5:
             feedback_items.append({
@@ -133,7 +125,7 @@ class FeedbackGenerator:
         else:
             strengths.append("Consistent emotional expression")
         
-        # Check for positive emotions
+        # check for positive emotions
         positive_emotions = emotion_percentages.get('happy', 0)
         if positive_emotions > 40:
             strengths.append("Strong positive emotional presence")
@@ -157,7 +149,7 @@ class FeedbackGenerator:
         energy = voice_results.get('energy', {})
         speaking_rate = voice_results.get('speaking_rate', {})
         
-        # Overall tone feedback
+        # overall tone feedback
         feedback_items.append({
             'category': 'Overall Vocal Tone',
             'observation': f"Your vocal tone was {overall_tone}.",
@@ -170,7 +162,7 @@ class FeedbackGenerator:
         else:
             improvements.append("Build more vocal confidence")
         
-        # Pitch feedback
+        # pitch feedback
         pitch_interp = pitch.get('interpretation', '')
         if 'monotone' in pitch_interp.lower():
             feedback_items.append({
@@ -183,14 +175,14 @@ class FeedbackGenerator:
         elif 'expressive' in pitch_interp.lower():
             strengths.append("Good pitch variation")
         
-        # Energy feedback
+        # energy feedback
         energy_interp = energy.get('interpretation', '')
         if 'confident' in energy_interp.lower():
             strengths.append("Clear and confident vocal energy")
         elif 'soft' in energy_interp.lower() or 'hesitant' in energy_interp.lower():
             improvements.append("Project voice with more energy")
         
-        # Speaking rate feedback
+        # speaking rate feedback
         rate_interp = speaking_rate.get('interpretation', '')
         if 'fast' in rate_interp.lower():
             feedback_items.append({
@@ -284,7 +276,7 @@ class FeedbackGenerator:
                     'description': 'Speak from your diaphragm, not your throat. Practice projecting your voice to fill the room confidently.'
                 })
         
-        # Always add a general recommendation
+        # always add a general recommendation
         recommendations.append({
             'title': 'Record and Review',
             'description': 'Regularly record yourself in practice sessions and review your nonverbal communication. Self-awareness is key to improvement.'
@@ -296,4 +288,3 @@ class FeedbackGenerator:
         })
         
         return recommendations
-

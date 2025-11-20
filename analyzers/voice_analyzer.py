@@ -1,6 +1,6 @@
 """
-Voice Tone Analyzer using Librosa
-Analyzes audio features to infer tone, confidence, and emotional state
+Analyze Voice Tone using Librosa
+and identify tone, confidence, and emotional state from audio
 """
 
 import librosa
@@ -8,7 +8,7 @@ import numpy as np
 try:
     from moviepy.editor import VideoFileClip
 except ImportError:
-    # MoviePy 2.x has different import structure
+    # if moviepy 2.x is used
     from moviepy import VideoFileClip
 import tempfile
 import os
@@ -22,93 +22,80 @@ class VoiceAnalyzer:
         self.sample_rate = 22050
         
     def analyze_video(self, video_path):
+        """Extract audio from video and analyze voice characteristics
+        Arguments: video_path: path to the video file
+        Return: dictionary with voice analysis results
         """
-        Extract audio from video and analyze voice characteristics
-        
-        Args:
-            video_path: Path to the video file
-            
-        Returns:
-            Dictionary containing voice analysis results
-        """
-        # Extract audio from video
+        # create a temporary audio file with .wav extension
         temp_audio_path = tempfile.mktemp(suffix='.wav')
-        
         try:
-            # Extract audio using moviepy
-            video = VideoFileClip(video_path)
-            
+            # extract audio using moviepy
+            video = VideoFileClip(video_path) # open the video file
             if video.audio is None:
                 return {
                     'error': 'No audio track found in video',
                     'has_audio': False
                 }
             
-            video.audio.write_audiofile(
+            video.audio.write_audiofile( # write the audio to the temporary file
                 temp_audio_path,
                 codec='pcm_s16le',
                 logger=None
             )
-            video.close()
+            video.close() # close the actual video file
             
-            # Load audio with librosa
+            # load audio to librosa
             y, sr = librosa.load(temp_audio_path, sr=self.sample_rate)
             
-            # Analyze audio features
+            # get voice features
             results = self._analyze_audio(y, sr)
             results['has_audio'] = True
             
             return results
             
         finally:
-            # Clean up temporary audio file
+            # clean up temporary audio file
             if os.path.exists(temp_audio_path):
                 os.remove(temp_audio_path)
     
     def _analyze_audio(self, y, sr):
+        """Analyze audio features using librosa
+        Arguments: y: audio time series, sr: sample rate
+        Return: dictionary with audio analysis metrics
         """
-        Analyze audio features using librosa
-        
-        Args:
-            y: Audio time series
-            sr: Sample rate
-            
-        Returns:
-            Dictionary with audio analysis metrics
-        """
-        # Duration
+        # get duration
         duration = librosa.get_duration(y=y, sr=sr)
         
-        # Pitch analysis (fundamental frequency)
+        # pitch analysis (fundamental frequency)
         pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
         pitch_values = []
         
+        # get the pitch values
         for t in range(pitches.shape[1]):
             index = magnitudes[:, t].argmax()
             pitch = pitches[index, t]
             if pitch > 0:
                 pitch_values.append(pitch)
         
+        # calculate average and standard deviation of pitch values
         avg_pitch = np.mean(pitch_values) if pitch_values else 0
         pitch_std = np.std(pitch_values) if pitch_values else 0
         
-        # Energy/Amplitude analysis
+        # energy and amplitude analysis
         rms = librosa.feature.rms(y=y)[0]
         avg_energy = np.mean(rms)
         energy_std = np.std(rms)
         
-        # Speaking rate (zero crossing rate as proxy)
+        # speaking rate (zero crossing rate as proxy)
         zcr = librosa.feature.zero_crossing_rate(y)[0]
         avg_zcr = np.mean(zcr)
         
-        # Spectral features
+        # spectral features and tempo (brightness of sound)
         spectral_centroids = librosa.feature.spectral_centroid(y=y, sr=sr)[0]
         avg_spectral_centroid = np.mean(spectral_centroids)
-        
-        # Tempo
         tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
         
-        # Interpret results
+        # convert features to human language (feedback)
         interpretation = self._interpret_features(
             avg_pitch, pitch_std, avg_energy, energy_std,
             avg_zcr, avg_spectral_centroid, tempo
@@ -140,13 +127,10 @@ class VoiceAnalyzer:
     
     def _interpret_features(self, pitch, pitch_std, energy, energy_std,
                            zcr, spectral_centroid, tempo):
+        """Interpret audio features to provide natural language feedback
+        Return: dictionary with interpretations for each feature
         """
-        Interpret audio features to provide natural language feedback
-        
-        Returns:
-            Dictionary with interpretations for each feature
-        """
-        # Pitch interpretation
+        # pitch interpretation
         if pitch > 180:
             pitch_interp = "high (possible excitement or stress)"
         elif pitch > 120:
@@ -159,7 +143,7 @@ class VoiceAnalyzer:
         elif pitch_std < 15:
             pitch_interp += " with low variation (monotone)"
         
-        # Energy interpretation
+        # energy interpretation
         if energy > 0.05:
             energy_interp = "high (confident and clear)"
         elif energy > 0.02:
@@ -167,7 +151,7 @@ class VoiceAnalyzer:
         else:
             energy_interp = "low (soft or hesitant)"
         
-        # Speaking rate interpretation
+        # speaking rate interpretation
         if zcr > 0.1:
             rate_interp = "fast (energetic or nervous)"
         elif zcr > 0.05:
@@ -175,7 +159,7 @@ class VoiceAnalyzer:
         else:
             rate_interp = "slow (deliberate or uncertain)"
         
-        # Spectral centroid interpretation (brightness of sound)
+        # spectral interpretation (brightness of sound)
         if spectral_centroid > 3000:
             spectral_interp = "bright (clear articulation)"
         elif spectral_centroid > 2000:
@@ -183,7 +167,7 @@ class VoiceAnalyzer:
         else:
             spectral_interp = "dark (muffled or low resonance)"
         
-        # Overall tone assessment
+        # overall tone assessment
         confidence_score = 0
         
         if 120 < pitch < 200:
@@ -209,4 +193,3 @@ class VoiceAnalyzer:
             'spectral': spectral_interp,
             'overall': overall
         }
-
