@@ -2,7 +2,7 @@
 
 let selectedFile = null;
 
-// DOM Elements
+
 const uploadArea = document.getElementById('uploadArea');
 const videoInput = document.getElementById('videoInput');
 const selectedFileDiv = document.getElementById('selectedFile');
@@ -18,40 +18,35 @@ const errorSection = document.getElementById('errorSection');
 const newAnalysisButton = document.getElementById('newAnalysisButton');
 const retryButton = document.getElementById('retryButton');
 
-// Initialize
+
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
 });
 
 function setupEventListeners() {
-    // File input change
+    
     videoInput.addEventListener('change', handleFileSelect);
     
-    // Upload button
+    
     const uploadButton = document.getElementById('uploadButton');
     uploadButton.addEventListener('click', (e) => {
         e.stopPropagation();
         videoInput.click();
     });
     
-    // Drag and drop
+   
     uploadArea.addEventListener('dragover', handleDragOver);
     uploadArea.addEventListener('dragleave', handleDragLeave);
     uploadArea.addEventListener('drop', handleDrop);
     
-    // Remove file
+   
     removeFileBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         clearSelectedFile();
     });
     
-    // Analyze button
     analyzeButton.addEventListener('click', analyzeVideo);
-    
-    // New analysis button
     newAnalysisButton.addEventListener('click', resetToUpload);
-    
-    // Retry button
     retryButton.addEventListener('click', resetToUpload);
 }
 
@@ -83,10 +78,10 @@ function handleDrop(e) {
 }
 
 function validateAndSetFile(file) {
-    // Check file type
+    
     if (!file.type.includes('mp4') && !file.name.toLowerCase().endsWith('.mp4')) {
         alert('Please upload an MP4 video file');
-        videoInput.value = ''; // Clear the input
+        videoInput.value = ''; 
         return;
     }
     
@@ -94,7 +89,7 @@ function validateAndSetFile(file) {
     const maxSize = 100 * 1024 * 1024;
     if (file.size > maxSize) {
         alert('File size exceeds 100MB limit');
-        videoInput.value = ''; // Clear the input
+        videoInput.value = ''; 
         return;
     }
     
@@ -114,13 +109,10 @@ function clearSelectedFile() {
 async function analyzeVideo() {
     if (!selectedFile) return;
     
-    // Show loading screen
     showSection('loading');
-    
-    // Start progress simulation
     startProgressSimulation();
     
-    // Create form data
+   
     const formData = new FormData();
     formData.append('video', selectedFile);
     
@@ -133,16 +125,16 @@ async function analyzeVideo() {
         const data = await response.json();
         
         if (data.success) {
-            // Stop the progress simulation
+           
             if (progressInterval) {
                 clearInterval(progressInterval);
             }
             
-            // Complete progress to 100%
+            
             updateProgress(100, 'Complete!');
             updateStepStatus('step3', 'completed');
             
-            // Wait to show 100% before displaying results
+           
             setTimeout(() => displayResults(data), 1000);
         } else {
             if (progressInterval) {
@@ -166,37 +158,35 @@ function startProgressSimulation() {
     currentProgress = 0;
     updateProgress(0, 'Starting analysis...');
     
-    // Clear any existing interval
     if (progressInterval) {
         clearInterval(progressInterval);
     }
     
-    // Simulate progress
+   
     progressInterval = setInterval(() => {
         if (currentProgress < 30) {
-            // Fast initial progress (uploading)
+            
             currentProgress += 2;
             updateProgress(currentProgress, 'Uploading video...');
         } else if (currentProgress < 60) {
-            // Facial analysis phase (slower)
+           
             currentProgress += 0.5;
             updateProgress(currentProgress, 'Analyzing facial expressions...');
             updateStepStatus('step1', 'in-progress');
         } else if (currentProgress < 85) {
-            // Voice analysis phase
+           
             currentProgress += 0.8;
             updateProgress(currentProgress, 'Analyzing voice tone...');
             updateStepStatus('step1', 'completed');
             updateStepStatus('step2', 'in-progress');
         } else if (currentProgress < 95) {
-            // Generating feedback
+           
             currentProgress += 0.3;
             updateProgress(currentProgress, 'Generating feedback...');
             updateStepStatus('step2', 'completed');
             updateStepStatus('step3', 'in-progress');
         }
-        
-        // Stop at 95% and wait for actual completion
+       
         if (currentProgress >= 95) {
             clearInterval(progressInterval);
             updateProgress(95, 'Finalizing results...');
@@ -233,34 +223,19 @@ function updateStepStatus(stepId, status) {
 
 function displayResults(data) {
     const { facial_analysis, voice_analysis, feedback } = data;
-    
-    // Display summary
     document.getElementById('summaryText').textContent = feedback.summary;
-    
-    // Display facial results
     displayFacialResults(facial_analysis);
-    
-    // Display voice results
     displayVoiceResults(voice_analysis);
-    
-    // Display strengths
     displayList('strengthsList', feedback.strengths);
-    
-    // Display improvements
     displayList('improvementsList', feedback.areas_for_improvement);
-    
-    // Display detailed feedback in summary card
     displayDetailedFeedbackInSummary(feedback.facial_feedback, feedback.voice_feedback);
-    
-    // Display recommendations
     displayRecommendations(feedback.recommendations);
     
-    // Display emotion timeline (now under summary)
     if (facial_analysis.timeline) {
         displayTimeline(facial_analysis.timeline);
     }
     
-    // Show results section
+   
     showSection('results');
 }
 
@@ -274,7 +249,7 @@ function displayFacialResults(facial) {
     
     let html = '';
     
-    // Dominant emotion
+    
     html += `
         <div class="metric">
             <span class="metric-label">Dominant Emotion</span>
@@ -284,7 +259,7 @@ function displayFacialResults(facial) {
         </div>
     `;
     
-    // Emotion percentages
+   
     html += '<div class="metric"><span class="metric-label">Emotion Distribution</span>';
     
     for (const [emotion, percentage] of Object.entries(facial.emotion_percentages)) {
@@ -301,7 +276,7 @@ function displayFacialResults(facial) {
     
     html += '</div>';
     
-    // Analysis stats
+   
     html += `
         <div class="metric">
             <span class="metric-label">Analysis Details</span>
@@ -325,7 +300,7 @@ function displayVoiceResults(voice) {
     
     let html = '';
     
-    // Overall tone
+  
     html += `
         <div class="metric">
             <span class="metric-label">Overall Tone</span>
@@ -335,7 +310,7 @@ function displayVoiceResults(voice) {
         </div>
     `;
     
-    // Pitch
+   
     html += `
         <div class="metric">
             <span class="metric-label">Pitch Analysis</span>
@@ -346,7 +321,7 @@ function displayVoiceResults(voice) {
         </div>
     `;
     
-    // Energy
+   
     html += `
         <div class="metric">
             <span class="metric-label">Vocal Energy</span>
@@ -356,7 +331,7 @@ function displayVoiceResults(voice) {
         </div>
     `;
     
-    // Speaking rate
+    
     html += `
         <div class="metric">
             <span class="metric-label">Speaking Rate</span>
@@ -366,7 +341,7 @@ function displayVoiceResults(voice) {
         </div>
     `;
     
-    // Duration
+    
     html += `
         <div class="metric">
             <span class="metric-label">Duration</span>
@@ -474,7 +449,7 @@ function showSection(section) {
         errorSection.style.display = 'flex';
     }
     
-    // Scroll to top
+ 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
