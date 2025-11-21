@@ -4,7 +4,7 @@ and separate emotions from video frames
 """
 
 import cv2
-"from deepface import DeepFace"
+from deepface import DeepFace
 import numpy as np
 from collections import Counter
 
