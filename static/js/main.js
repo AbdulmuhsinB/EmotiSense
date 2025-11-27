@@ -462,4 +462,3 @@ function resetToUpload() {
     clearSelectedFile();
     showSection('upload');
 }
-

@@ -26,28 +26,21 @@ except Exception as e:
     print(f"✗ FAILED: {e}")
 
 try:
-    print("4. Testing Pandas...", end=" ")
-    import pandas
-    print("✓ OK")
-except Exception as e:
-    print(f"✗ FAILED: {e}")
-
-try:
-    print("5. Testing Librosa (may take a moment)...", end=" ")
+    print("4. Testing Librosa (may take a moment)...", end=" ")
     import librosa
     print("✓ OK")
 except Exception as e:
     print(f"✗ FAILED: {e}")
 
 try:
-    print("6. Testing DeepFace (may take a moment)...", end=" ")
+    print("5. Testing DeepFace (may take a moment)...", end=" ")
     import deepface
     print("✓ OK")
 except Exception as e:
     print(f"✗ FAILED: {e}")
 
 try:
-    print("7. Testing MoviePy...", end=" ")
+    print("6. Testing MoviePy...", end=" ")
     import moviepy
     print("✓ OK")
 except Exception as e:

@@ -13,8 +13,7 @@ class FacialAnalyzer:
     
     def __init__(self):
         """Initialization"""
-        self.emotions = []
-        self.frame_count = 0
+        pass
         
     def analyze_video(self, video_path, frame_skip=5):
         """ Analyze vide for emotions from frames
@@ -64,14 +63,13 @@ class FacialAnalyzer:
                     'emotion': dominant_emotion,
                     'scores': emotion_scores
                 })
-                if frame_idx % 30 == 0:  # update progress bar every 30 frames
-                    print(f"Processed frame {frame_idx}/{total_frames}")
+                
+                print(f"Processed frame {frame_idx}/{total_frames}")
                 
             except Exception as e:
                 # when no face detected or some error happens, skip the frame
                 # print(f"Error analyzing frame {frame_idx}: {e}")
                 pass
-            
             # go to the next frame
             frame_idx += 1
         
