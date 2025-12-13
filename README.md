@@ -3,9 +3,9 @@
 ## Developers & Collaborators
 | Full Name | Student ID | GitHub | Email |
 |--|--|--|--|
-| Erkam Yildirim | 160235206 | emyildirim | eyildirim1@myseneca.ca |
-| Abdulmuhsin Baksh | | | |
-| Ahmed Hafiz Shaikh | 127566222 | ahshaikh4 | ahshaikh4@myseneca.ca |
+| Erkam Yildirim | 160235206 | eyildirim1@myseneca.ca |
+| Abdulmuhsin Baksh | 178802211| abaksh9@myseneca.ca |
+| Ahmed Hafiz Shaikh | 127566222 | ahshaikh4@myseneca.ca |
 
 
 ## Project Description
